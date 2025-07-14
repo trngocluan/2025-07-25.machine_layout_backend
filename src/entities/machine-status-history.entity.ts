@@ -13,9 +13,9 @@ export class MachineStatusHistory {
   @Column({ name: '運転状態' })
   status: number; // Trạng thái vận hành: 0 - dừng, 1 - chạy, 2 - lỗi
 
-  @Column({ name: 'X位置' })
+  @Column({ name: 'X' })
   x: number; // Tọa độ X trên layout
 
-  @Column({ name: 'Y位置' })
+  @Column({ name: 'Y' })
   y: number; // Tọa độ Y trên layout
 }
