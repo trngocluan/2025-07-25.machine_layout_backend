@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 import { MachineStatusHistory } from './entities/machine-status-history.entity';
 import { MachineMaster } from './entities/machine-master.entity';
 import { ProductionProgress } from './entities/production-progress.entity';
+import { MachineModule } from './machine/machine.module';
 // Import các entity đã tạo
 
 dotenv.config(); // Load biến môi trường từ file .env
@@ -28,6 +29,7 @@ dotenv.config(); // Load biến môi trường từ file .env
         trustServerCertificate: true, // Quan trọng nếu SQL Server không dùng SSL chính thống
       },
     }),
+    MachineModule,
     
   ],
 })
