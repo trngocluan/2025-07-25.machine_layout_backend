@@ -2,6 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 
+import { MachineStatusHistory } from './entities/machine-status-history.entity';
+import { MachineMaster } from './entities/machine-master.entity';
+import { ProductionProgress } from './entities/production-progress.entity';
+// Import các entity đã tạo
+
 dotenv.config(); // Load biến môi trường từ file .env
 
 @Module({
@@ -14,7 +19,7 @@ dotenv.config(); // Load biến môi trường từ file .env
       username: process.env.DB_USERNAME as string,
       password: process.env.DB_PASSWORD as string,
       database: process.env.DB_DATABASE as string,
-      entities: [], // Sẽ thêm sau ở bước 3
+      entities: [MachineStatusHistory, MachineMaster, ProductionProgress], // Sẽ thêm sau ở bước 2
       synchronize: false, // KHÔNG tự tạo bảng mới!
       options: {
         encrypt: false,
