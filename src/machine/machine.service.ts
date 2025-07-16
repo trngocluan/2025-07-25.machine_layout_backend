@@ -41,7 +41,7 @@ export class MachineService {
             shiftDate = now.toISOString().split('T')[0];
             const diffMs = now.getTime() - startOfShift.getTime();
             const hour = Math.floor(diffMs / (60 * 60 * 1000));
-            hour_for_query = hour + 9 - 8 - 2;
+            hour_for_query = hour + 9 - 8 - 3;
             // + 9 là để điều chỉnh múi giờ Tokyo (UTC+9)
             // - 8 là để lấy giờ từ 08:00 hôm nay
             // - 1 là để lấy giờ liền trước (đảm bảo lấy khung giờ đã được cập nhật counter)
@@ -53,7 +53,7 @@ export class MachineService {
             startOfYesterday.setHours(8, 0, 0, 0);
             const diffMs = now.getTime() - startOfYesterday.getTime();
             const hour = Math.floor(diffMs / (60 * 60 * 1000));
-            hour_for_query = hour + 9 - 8 - 2;
+            hour_for_query = hour + 9 - 8 - 3;
             // + 9 là để điều chỉnh múi giờ Tokyo (UTC+9)
             // - 8 là để lấy giờ từ 08:00 hôm qua
             // - 1 là để lấy giờ trước đó (đảm bảo lấy khung giờ đã được cập nhật counter)
