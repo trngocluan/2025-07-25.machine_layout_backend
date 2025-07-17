@@ -29,9 +29,8 @@ export class MachineService {
    */
     async getMachineSummary(factory_type: number) {
         
-        // Lấy thời gian hiện tại và điều chỉnh múi giờ về JST (UTC+9)
-        // Nhật Bản hiện đang sử dụng múi giờ JST (UTC+9)
-        const now = new Date(new Date().getTime() + 9 * 60 * 60 * 1000); 
+        // Lấy thời gian hiện tại
+        const now = new Date();
 
         // Tính ngày và giờ tương ứng với ca
         const startOfShift = new Date(now);
@@ -44,8 +43,7 @@ export class MachineService {
             shiftDate = now.toISOString().split('T')[0];
             const diffMs = now.getTime() - startOfShift.getTime();
             const hour = Math.floor(diffMs / (60 * 60 * 1000));
-            hour_for_query = hour - 9 + 8 - 1;
-            // - 9 là để bù trừ múi giờ Nhật Bản (JST)
+            hour_for_query = hour + 8 - 1;
             // + 8 là để lấy giờ từ 08:00 hôm nay
             // - 1 là để lấy giờ liền trước (đảm bảo lấy khung giờ đã được cập nhật counter)
         } else {
@@ -56,9 +54,8 @@ export class MachineService {
             startOfYesterday.setHours(8, 0, 0, 0);
             const diffMs = now.getTime() - startOfYesterday.getTime();
             const hour = Math.floor(diffMs / (60 * 60 * 1000));
-            hour_for_query = hour - 24 - 9 + 8 - 1;
+            hour_for_query = hour - 24 + 8 - 1;
             // - 24 là để bù trừ cho ngày hôm qua
-            // - 9 là để bù trừ múi giờ Nhật Bản (JST)
             // + 8 là để lấy giờ từ 08:00 hôm nay
             // - 1 là để lấy giờ trước đó (đảm bảo lấy khung giờ đã được cập nhật counter)
         }

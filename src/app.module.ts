@@ -34,5 +34,10 @@ dotenv.config(); // Load biến môi trường từ file .env
   ],
 })
 export class AppModule {
-  
+  // Constructor để kiểm tra kết nối cơ sở dữ liệu
+  // và in ra thông tin kết nối
+  constructor() {
+    dotenv.config();
+    console.log('>> DB_HOST = ' + process.env.DB_HOST);
+  }
 }
