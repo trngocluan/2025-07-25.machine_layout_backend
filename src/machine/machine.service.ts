@@ -29,10 +29,11 @@ export class MachineService {
    */
     async getMachineSummary(factory_type: number) {
         
-        // Lấy thời gian hiện tại
-        const now = new Date();
+        // ✅ Lấy giờ hệ thống từ SQL Server để làm chuẩn
+        const dbNowResult = await this.dataSource.query(`SELECT GETDATE() AS now`);
+        const now = new Date(dbNowResult[0].now); // giờ JST từ SQL Server
 
-        // Tính ngày và giờ tương ứng với ca
+        // Tính ngày và giờ tương ứng với ca (mốc đầu ca là 8:00 sáng)
         const startOfShift = new Date(now);
         startOfShift.setHours(8, 0, 0, 0);
 
@@ -40,6 +41,7 @@ export class MachineService {
         let hour_for_query: number;
 
         if (now >= startOfShift) {
+             // 👉 Đang trong ca hôm nay
             shiftDate = now.toISOString().split('T')[0];
             const diffMs = now.getTime() - startOfShift.getTime();
             const hour = Math.floor(diffMs / (60 * 60 * 1000));
@@ -47,6 +49,7 @@ export class MachineService {
             // + 8 là để lấy giờ từ 08:00 hôm nay
             // - 1 là để lấy giờ liền trước (đảm bảo lấy khung giờ đã được cập nhật counter)
         } else {
+            // 👉 Đang trước 8h sáng → thuộc ca hôm qua
             const yesterday = new Date(now);
             yesterday.setDate(now.getDate() - 1);
             shiftDate = yesterday.toISOString().split('T')[0];
@@ -55,6 +58,7 @@ export class MachineService {
             const diffMs = now.getTime() - startOfYesterday.getTime();
             const hour = Math.floor(diffMs / (60 * 60 * 1000));
             hour_for_query = hour - 24 + 8 - 1;
+            if (hour_for_query < 0){hour_for_query = hour_for_query + 24}
             // - 24 là để bù trừ cho ngày hôm qua
             // + 8 là để lấy giờ từ 08:00 hôm nay
             // - 1 là để lấy giờ trước đó (đảm bảo lấy khung giờ đã được cập nhật counter)
