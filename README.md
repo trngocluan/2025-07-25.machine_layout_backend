@@ -1,3 +1,115 @@
+# 🏭 Machine Layout - Backend API（NestJS）
+
+## 📌 概要 | Tổng quan
+
+本システムは、工場内の設備の稼働状態、位置、パフォーマンスなどを可視化するWebアプリケーションのバックエンドAPIです。NestJS + TypeORM + SQL Server をベースに構築されています。
+
+Hệ thống này là phần backend API cho ứng dụng web dùng để trực quan hóa tình trạng, vị trí và hiệu suất của thiết bị trong nhà máy. Được xây dựng bằng NestJS + TypeORM + SQL Server.
+
+---
+
+## ⚙️ 使用技術 | Công nghệ sử dụng
+
+- ✅ [NestJS](https://nestjs.com/) - Node.js向けのフレームワーク（バックエンドAPI構築）
+- ✅ TypeORM - ORMライブラリ（DB接続・操作）
+- ✅ Microsoft SQL Server - データベース
+- ✅ TypeScript
+
+---
+
+## 🗂️ ディレクトリ構成 | Cấu trúc thư mục
+
+```
+src/
+├── app.module.ts                 // アプリケーションモジュール
+├── app.controller.ts            // ルートAPIコントローラー
+├── machine/                     // 設備データ関連API
+│   ├── machine.controller.ts
+│   ├── machine.service.ts
+│   └── machine.module.ts
+├── entities/                    // DBエンティティ定義
+│   ├── machine-master.entity.ts
+│   ├── machine-status-history.entity.ts
+│   └── production-progress.entity.ts
+```
+
+---
+
+## 🚀 起動方法 | Cách khởi động
+
+### 1. 環境変数ファイルの作成 | Tạo file cấu hình `.env`
+
+プロジェクトルートに `.env` ファイルを作成し、以下の内容を記述してください：
+
+Tạo file `.env` tại thư mục gốc và điền thông tin kết nối như sau:
+
+```env
+DB_HOST=localhost
+DB_PORT=1433
+DB_USERNAME=sa
+DB_PASSWORD=yourStrong(!)Password
+DB_DATABASE=IoT_DB
+PORT=3000
+```
+
+### 2. 依存パッケージのインストール | Cài đặt thư viện
+
+```bash
+npm install
+```
+
+### 3. サーバーの起動 | Chạy server
+
+```bash
+npm run start
+```
+
+- デフォルトポート: http://localhost:3000
+- CORSが有効なので、Angularなどのフロントエンドと連携可能です。
+- CORS được bật sẵn để frontend (Angular) gọi API.
+
+---
+
+## 📘 主なAPI | Các API chính
+
+### `GET /machine?factory=2`
+
+- 指定した工場の設備リストを取得（状態・座標・パフォーマンスなど）
+- Trả về danh sách thiết bị theo nhà máy (gồm trạng thái, vị trí, hiệu suất...)
+
+---
+
+## 🔒 注意事項 | Lưu ý
+
+- `synchronize: false` に設定されているため、DBスキーマは自動生成されません。
+- DBは事前に用意してください。
+- Vì `synchronize = false`, hệ thống sẽ không tự tạo bảng. Cần chuẩn bị DB sẵn.
+
+---
+
+## 👨‍💻 保守・引き継ぎ用コメント | Chú thích bàn giao
+
+すべてのコードには **ベトナム語＋日本語のコメント** を記述しています。
+Toàn bộ mã nguồn đã được chú thích **song ngữ Việt – Nhật** để dễ bảo trì và bàn giao.
+
+---
+
+## 🧩 補足 | Bổ sung
+
+- 設備の種類＝40 の場合のみ稼働率（パフォーマンス）を計算します。
+- Hiệu suất chỉ tính cho thiết bị có `machine_type = 40`.
+
+---
+
+## 🧑‍🏫 作成者 | Tác giả
+
+- 🇻🇳 Luan Kun – Senior DX Manager (Maruei Vietnam Precision)
+- 📧 Email: luan@marueivn.com
+
+---
+
+
+//////////////////////////// Original From NestJS ///////////////////////////////
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
