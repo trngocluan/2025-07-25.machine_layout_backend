@@ -6,6 +6,97 @@
 
 Hệ thống này là phần backend API cho ứng dụng web dùng để trực quan hóa tình trạng, vị trí và hiệu suất của thiết bị trong nhà máy. Được xây dựng bằng NestJS + TypeORM + SQL Server.
 
+## 🏭 Mục tiêu hệ thống | システムの目的
+API trả về danh sách máy của nhà máy theo sơ đồ layout, bao gồm:  
+工場内のレイアウトに基づいて機器一覧を返すAPIです。以下の情報を含みます：
+
+- Thông tin: số máy, vị trí (x, y), trạng thái vận hành  
+  機器番号、座標（x, y）、運転状態（停止・稼働・異常）
+
+- Nếu là máy có counter (loại 40): thêm ct, sản lượng counter, hiệu suất performance (%)  
+  タイプ40の機器（カウンター付き）の場合：CT、生産数、稼働率（%）も含む
+
+- Hỗ trợ hiển thị real-time trên TV hoặc dashboard giám sát  
+  TVやダッシュボードでのリアルタイム表示に対応
+
+## 🔗 API endpoint
+
+```bash
+GET /machine?factory=2
+```
+
+- `factory=2` tương ứng với nhà máy Mercury  
+- `factory=2` は Mercury 工場を示す
+
+⚠ Các máy có `machine_type ≠ 40` vẫn được trả về nhưng không có hiệu suất  
+⚠ タイプ40以外の機器も返されますが、稼働率は含まれません
+
+## 🔁 Ví dụ phản hồi | レスポンス例
+
+```json
+[
+  {
+    "machine_no": 2501,
+    "x": 270,
+    "y": 855,
+    "status": 1,
+    "ct": 13,
+    "machine_type": 40,
+    "hour": 6,
+    "counter": 779,
+    "performance": 0.401
+  }
+]
+```
+
+## 🗂 Cấu trúc database (SQL Server) | データベース構成
+
+### 🔹 Bảng A – Trạng thái máy: `DE_TBL_運転状態履歴`
+
+| Cột Nhật | Giải thích | 説明 |
+|----------|------------|------|
+| 工場区分 | Mã nhà máy | 工場コード |
+| 機器番号 | Số máy | 機器番号 |
+| 運転状態 | Trạng thái (0-dừng, 1-chạy, 2-lỗi) | 稼働状態（0=停止, 1=稼働, 2=異常） |
+| X位置 / Y位置 | Tọa độ trong layout | レイアウト上の座標 |
+
+### 🔹 Bảng B – Master thiết bị: `DE_MST_機器マスタ`
+
+| Cột Nhật | Giải thích | 説明 |
+|----------|------------|------|
+| 機器番号 | Mã thiết bị | 機器番号 |
+| 工場区分 | Nhà máy | 工場区分 |
+| 機器区分 | Loại thiết bị (40 là có counter) | タイプ（40 = カウンター付き） |
+| CT | Chu kỳ chuẩn (giây/sp) | サイクルタイム（秒/個） |
+
+### 🔹 Bảng C – Tiến độ sản xuất: `DE_TBL_生産進捗`
+
+| Cột Nhật | Giải thích | 説明 |
+|----------|------------|------|
+| 機器番号 | Mã thiết bị | 機器番号 |
+| 日付 | Ngày sản xuất (yyyy-MM-dd) | 生産日（yyyy-MM-dd） |
+| 時間 | Khung giờ (VD: 8 = 08:00–08:59) | 時間スロット（例：8=08:00〜08:59） |
+| 生産数 | Tổng sản lượng đến cuối khung giờ | 累積生産数（その時間帯まで） |
+
+## 🧠 Cách tính hiệu suất | 稼働率の計算方法
+
+```ts
+performance = counter / (seconds / ct)
+```
+
+Trong đó:  
+- `counter`: sản lượng tích lũy đến thời điểm đó（累積生産数）  
+- `ct`: thời gian 1 chu kỳ máy（1サイクルにかかる秒数）  
+- `seconds`: số giây thực tế đã chạy từ 08:00 đến giờ hiện tại（08:00以降の経過秒数）
+
+⏱ Quy tắc thời gian | 時間のルール:
+
+- `hour_for_query` = số giờ đã qua từ 08:00 - 1  
+  `hour_for_query` = 08:00から経過した時間 - 1
+
+- Nếu < 8 → tính từ 08:00 hôm qua  
+  8未満なら前日の08:00から換算
+
 ---
 
 ## ⚙️ 使用技術 | Công nghệ sử dụng
@@ -104,12 +195,11 @@ Toàn bộ mã nguồn đã được chú thích **song ngữ Việt – Nhật*
 ## 🧑‍🏫 作成者 | Tác giả
 
 - 🇻🇳 Luan Kun – Senior DX Manager (Maruei Vietnam Precision)
-- 📧 Email: luan@marueivn.com
 
 ---
 
 
-//////////////////////////// Original From NestJS ///////////////////////////////
+//////////////////////////////////// Original From NestJS /////////////////////////////////////
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
