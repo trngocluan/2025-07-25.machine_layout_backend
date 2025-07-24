@@ -1,3 +1,17 @@
+// ==============================================================================
+// src/app.controller.ts
+// 📄 app.controller.ts - 🇻🇳 Controller chính của ứng dụng NestJS
+//                       🇯🇵 NestJSアプリケーションのメインコントローラー
+//
+// ✅ 🇻🇳 File này định nghĩa các endpoint cơ bản của API (RESTful):
+//       • Route GET "/" trả về chuỗi từ AppService
+//       • Là ví dụ mẫu cho cách sử dụng controller trong NestJS
+//
+// ✅ 🇯🇵 このファイルでは、基本的なAPIエンドポイントを定義します：
+//       • GET "/" で AppService からの文字列を返す
+//       • NestJS におけるコントローラーの使い方を示すサンプル
+// ==============================================================================
+
 // ✅ Bộ điều khiển chính (Controller) của ứng dụng NestJS
 // ✅ NestJSアプリケーションのメインコントローラーです
 

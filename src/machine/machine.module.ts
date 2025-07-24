@@ -1,3 +1,17 @@
+// ==============================================================================
+// src/machine/machine.module.ts
+// 📄 machine.module.ts - 🇻🇳 Định nghĩa module "Machine" trong kiến trúc NestJS
+//                      🇯🇵 NestJSアーキテクチャにおける「Machine」モジュールの定義
+//
+// ✅ 🇻🇳 File này chịu trách nhiệm:
+//       • Tổ chức controller, service, và các entity liên quan đến module "Machine"
+//       • Kết nối TypeORM với các bảng máy, trạng thái, và sản lượng
+//
+// ✅ 🇯🇵 このファイルでは以下の役割を担います：
+//       • 「Machine」モジュールに必要なコントローラー、サービス、エンティティを整理
+//       • TypeORM経由で機械・状態・生産数テーブルと接続
+// ==============================================================================
+
 // ✅ Khai báo module "Machine" theo kiến trúc của NestJS
 // ✅ NestJSの構成に従って「Machine」モジュールを定義する
 

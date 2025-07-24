@@ -1,3 +1,21 @@
+// ==============================================================================
+// src/machine/machine.service.ts
+// 📄 machine.service.ts - 🇻🇳 Service xử lý nghiệp vụ và truy vấn dữ liệu máy
+//                        🇯🇵 設備情報の取得と稼働率計算を行うサービスロジック
+//
+// ✅ 🇻🇳 File này chịu trách nhiệm:
+//       • Truy vấn dữ liệu từ 3 bảng: Master, Trạng thái, Sản lượng
+//       • Tính toán hiệu suất máy (performance) theo thời gian thực
+//       • Tách xử lý riêng cho máy loại 40 (cuối line) để tính hiệu suất
+//       • Phân biệt ngày/giờ theo ca làm việc (ca từ 08:00)
+//
+// ✅ 🇯🇵 このファイルでは以下の処理を担当：
+//       • 機器マスタ・状態履歴・生産進捗の3テーブルを結合してデータ取得
+//       • ライン末端機械（タイプ40）に対する稼働率の算出ロジック
+//       • シフトの開始時間（08:00）に基づく日付・時間の補正処理
+//       • 各機械の座標・状態・生産数を含む一覧を返す
+// ==============================================================================
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, LessThanOrEqual, DataSource } from 'typeorm';

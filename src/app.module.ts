@@ -1,3 +1,19 @@
+// ==============================================================================
+// src/app.module.ts
+// 📄 app.module.ts - 🇻🇳 Module gốc của ứng dụng NestJS
+//                   🇯🇵 NestJSアプリケーションのルートモジュール
+//
+// ✅ 🇻🇳 File này có vai trò cấu hình các thành phần chính:
+//       • Kết nối đến cơ sở dữ liệu SQL Server bằng TypeORM
+//       • Nạp biến môi trường từ file `.env`
+//       • Import các module nghiệp vụ như `MachineModule`
+//
+// ✅ 🇯🇵 このファイルでは主に以下の設定を行います：
+//       • TypeORMを使ってSQL Serverと接続
+//       • `.env`ファイルから環境変数を読み込み
+//       • 業務モジュール（MachineModuleなど）を読み込み
+// ==============================================================================
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';

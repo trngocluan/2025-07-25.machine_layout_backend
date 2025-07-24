@@ -1,3 +1,19 @@
+// ==============================================================================
+// src/main.ts
+// 📄 main.ts - 🇻🇳 Điểm khởi động (entry point) của ứng dụng NestJS
+//             🇯🇵 NestJSアプリケーションのエントリーポイント（起動ファイル）
+//
+// ✅ 🇻🇳 File này dùng để:
+//       • Tạo ứng dụng NestJS từ AppModule
+//       • Bật CORS để cho phép frontend truy cập API
+//       • Mở cổng lắng nghe để nhận request (port lấy từ biến môi trường hoặc mặc định 3000)
+//
+// ✅ 🇯🇵 このファイルでは：
+//       • AppModule から NestJS アプリを生成
+//       • フロントエンドとの通信を許可するために CORS を有効化
+//       • 指定されたポート（環境変数）または 3000 番でアプリを起動
+// ==============================================================================
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 

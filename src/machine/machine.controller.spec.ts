@@ -1,3 +1,15 @@
+// ==============================================================================
+// src/machine/machine.controller.spec.ts
+// 📄 machine.controller.spec.ts - 🇻🇳 Unit test mẫu cho MachineController
+//                               🇯🇵 MachineControllerに対する基本的なユニットテスト
+//
+// ✅ 🇻🇳 File này kiểm tra việc khởi tạo controller có thành công hay không.
+//         Đây là bước đầu để xây dựng các test case logic nâng cao.
+//
+// ✅ 🇯🇵 このファイルでは、コントローラーのインスタンスが正しく生成されるかを検証します。
+//         今後、ビジネスロジックのテストを追加するための土台となります。
+// ==============================================================================
+
 // ✅ Unit test cho MachineController bằng cách sử dụng Jest và NestJS TestingModule
 // ✅ JestとNestJSのTestingModuleを使ってMachineControllerのユニットテストを行う
 
