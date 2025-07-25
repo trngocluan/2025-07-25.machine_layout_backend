@@ -1,73 +1,77 @@
 // ==============================================================================
 // src/app.module.ts
-// 📄 app.module.ts - 🇻🇳 Module gốc của ứng dụng NestJS
-//                   🇯🇵 NestJSアプリケーションのルートモジュール
+// 📄 app.module.ts - 🇻🇳 Cấu hình chính của ứng dụng NestJS (Root module)
+//                   🇯🇵 NestJSアプリケーションのルートモジュール設定
 //
-// ✅ 🇻🇳 File này có vai trò cấu hình các thành phần chính:
-//       • Kết nối đến cơ sở dữ liệu SQL Server bằng TypeORM
-//       • Nạp biến môi trường từ file `.env`
-//       • Import các module nghiệp vụ như `MachineModule`
+// ✅ 🇻🇳 File này dùng để:
+//       • Import các module cần thiết (Config, TypeORM, Feature Modules)
+//       • Thiết lập kết nối cơ sở dữ liệu SQL Server
+//       • Khai báo controller và service chính của ứng dụng
 //
-// ✅ 🇯🇵 このファイルでは主に以下の設定を行います：
-//       • TypeORMを使ってSQL Serverと接続
-//       • `.env`ファイルから環境変数を読み込み
-//       • 業務モジュール（MachineModuleなど）を読み込み
+// ✅ 🇯🇵 このファイルでは：
+//       • 必要なモジュール（Config、TypeORM、機能モジュール）をインポート
+//       • SQL Serverへのデータベース接続を設定
+//       • アプリケーションのメインコントローラーとサービスを宣言
 // ==============================================================================
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as dotenv from 'dotenv';
+import { ConfigModule } from '@nestjs/config';
 
 import { MachineStatusHistory } from './entities/machine-status-history.entity';
-import { MachineMaster } from './entities/machine-master.entity';
-import { ProductionProgress } from './entities/production-progress.entity';
-import { MachineModule } from './machine/machine.module';
-
-// Import các entity đã tạo
-// 作成済みのエンティティをインポートする
-
-dotenv.config(); 
-// Load biến môi trường từ file .env
-// .envファイルから環境変数を読み込む
+import { MachineService } from './machine/machine.service';
+import { MachineController } from './machine/machine.controller';
 
 @Module({
   imports: [
-    // Kết nối SQL Server
-    // SQL Server に接続する
+    // ==========================================================================
+    // 🌐 ConfigModule - 🇻🇳 Cho phép dùng biến môi trường toàn cục
+    //                  🇯🇵 環境変数をグローバルに使用可能にする設定
+    // ==========================================================================
+    ConfigModule.forRoot({ isGlobal: true }),
+
+    // ==========================================================================
+    // 🗄️ TypeORM - 🇻🇳 Thiết lập kết nối SQL Server từ .env
+    //              🇯🇵 .envファイルからSQL Serverへの接続情報を取得
+    // ==========================================================================
     TypeOrmModule.forRoot({
       type: 'mssql',
-      host: process.env.DB_HOST as string,
-      port: parseInt(process.env.DB_PORT as string, 10),
-      username: process.env.DB_USERNAME as string,
-      password: process.env.DB_PASSWORD as string,
-      database: process.env.DB_DATABASE as string,
-      entities: [MachineStatusHistory, MachineMaster, ProductionProgress], 
-      // Sẽ thêm sau ở bước 2
-      // ステップ2で追加する予定
-      synchronize: false, 
-      // KHÔNG tự tạo bảng mới!
-      // 新しいテーブルを自動作成しないこと！
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [MachineStatusHistory],
+      synchronize: false, // ❌ Không tự động sync schema (an toàn cho DB thật)
+                          // ❌ 本番DBに対してスキーマ自動同期しない（安全）
+
       options: {
         encrypt: false,
         enableArithAbort: true,
-        instanceName: 'SQLEXPRESS', 
-        // Nếu bạn sử dụng SQL Server Express
-        // SQL Server Express を使用する場合
-        trustServerCertificate: true, 
-        // Quan trọng nếu SQL Server không dùng SSL chính thống
-        // 正式なSSLを使用していないSQL Serverでは重要
-      },
+        instanceName: 'SQLEXPRESS', // ✅ Nếu dùng SQL Server Express
+                                    // ✅ SQL Server Express を使用する場合
+        trustServerCertificate: true // ✅ Cho phép nếu không dùng SSL chính thống
+                                     // ✅ 正式なSSL証明書を使っていない場合に必要
+      }
     }),
-    MachineModule,
-    
+
+    // ==========================================================================
+    // 📦 Đăng ký entity cho các repository sử dụng @InjectRepository()
+    //    @InjectRepository() で使用するエンティティを登録
+    // ==========================================================================
+    TypeOrmModule.forFeature([MachineStatusHistory])
   ],
+
+  // ============================================================================
+  // 🎮 Controller điều khiển API
+  //    APIルーティングを制御するコントローラー
+  // ============================================================================
+  controllers: [MachineController],
+
+  // ============================================================================
+  // ⚙️ Service chứa logic xử lý nghiệp vụ
+  //    業務ロジックを含むサービス
+  // ============================================================================
+  providers: [MachineService],
 })
-export class AppModule {
-  // Constructor để kiểm tra kết nối cơ sở dữ liệu
-  // và in ra thông tin kết nối
-  // データベース接続を確認し、接続情報を表示するコンストラクタ
-  constructor() {
-    dotenv.config();
-    console.log('>> DB_HOST = ' + process.env.DB_HOST);
-  }
-}
+export class AppModule {}

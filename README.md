@@ -19,6 +19,12 @@ API trả về danh sách máy của nhà máy theo sơ đồ layout, bao gồm:
 - Hỗ trợ hiển thị real-time trên TV hoặc dashboard giám sát  
   TVやダッシュボードでのリアルタイム表示に対応
 
+- 🇻🇳 Truy xuất dữ liệu từ bảng `DE_TBL_運転状態履歴` trên SQL Server  
+  🇯🇵 SQL Server の `DE_TBL_運転状態履歴` テーブルからデータを取得
+
+- 🇻🇳 Tính hiệu suất máy theo thời gian thực từ 08:00 đến hiện tại  
+  🇯🇵 当日の08:00から現在までの稼働率をリアルタイムで算出
+
 ## 🔗 API endpoint
 
 ```bash
@@ -36,20 +42,33 @@ GET /machine?factory=2
 ```json
 [
   {
-    "machine_no": 2501,
-    "x": 270,
-    "y": 855,
+    "machine_no": 2403,
+    "x": -200,
+    "y": -200,
     "status": 1,
+    "ct": null,
+    "machine_type": 30,
+    "hour": null,
+    "counter": null,
+    "performance": null
+  },
+  {
+    "machine_no": 2501,
+    "x": 2012,
+    "y": 2094,
+    "status": 0,
     "ct": 13,
     "machine_type": 40,
-    "hour": 6,
-    "counter": 779,
-    "performance": 0.401
+    "hour": 10,
+    "counter": 681,
+    "performance": 0.82
   }
 ]
 ```
 
 ## 🗂 Cấu trúc database (SQL Server) | データベース構成
+
+## BEFORE
 
 ### 🔹 Bảng A – Trạng thái máy: `DE_TBL_運転状態履歴`
 
@@ -78,6 +97,23 @@ GET /machine?factory=2
 | 時間 | Khung giờ (VD: 8 = 08:00–08:59) | 時間スロット（例：8=08:00〜08:59） |
 | 生産数 | Tổng sản lượng đến cuối khung giờ | 累積生産数（その時間帯まで） |
 
+## AFTER
+
+### 📊 Cấu trúc bảng `dbo.DE_TBL_運転状態履歴` | テーブル構造
+
+| 🇯🇵 列名    | 🇻🇳 Tên tiếng Việt    | Kiểu dữ liệu  | 🇻🇳 Giải thích                  | 🇯🇵 説明                     |
+|-----------|----------------------|---------------|--------------------------------|----------------------------|
+| 連番      | Số thứ tự            | int (PK)      | Khóa chính tự tăng             | 自動増分の主キー             |
+| 工場区分  | Mã nhà máy            | int           | Mã nhà máy (VD: 2 = Mercury)   | 工場コード（例：2）          |
+| 機器番号  | Mã thiết bị           | int           | Số hiệu máy                    | 設備番号                    |
+| 機器区分  | Loại thiết bị         | int           | Loại máy (VD: 40 = cuối line)  | 設備種別（40 = ライン末端）  |
+| 運転状態  | Trạng thái hoạt động  | int           | 1 = chạy, 0 = dừng             | 1 = 稼働中、0 = 停止        |
+| 生産数    | Sản lượng             | int           | Lũy kế từ 08:00                | 当日08:00以降の累積生産数    |
+| CT       | Chu kỳ sản xuất        | decimal(8,2) | Cycle Time (giây)              | サイクルタイム（秒）         |
+| X        | Tọa độ X               | int          | Vị trí X trên layout           | レイアウトX座標             |
+| Y        | Tọa độ Y               | int          | Vị trí Y trên layout           | レイアウトY座標             |
+| 更新日時  | Thời điểm cập nhật    | datetime     | Thời gian cập nhật mới nhất     | 最終更新日時                |
+
 ## 🧠 Cách tính hiệu suất | 稼働率の計算方法
 
 ```ts
@@ -90,10 +126,6 @@ Trong đó:
 - `seconds`: số giây thực tế đã chạy từ 08:00 đến giờ hiện tại（08:00以降の経過秒数）
 
 ⏱ Quy tắc thời gian | 時間のルール:
-
-- `hour_for_query` = số giờ đã qua từ 08:00 - 1  
-  `hour_for_query` = 08:00から経過した時間 - 1
-
 - Nếu < 8 → tính từ 08:00 hôm qua  
   8未満なら前日の08:00から換算
 
@@ -111,17 +143,18 @@ Trong đó:
 ## 🗂️ ディレクトリ構成 | Cấu trúc thư mục
 
 ```
-src/
-├── app.module.ts                 // アプリケーションモジュール
-├── app.controller.ts            // ルートAPIコントローラー
-├── machine/                     // 設備データ関連API
-│   ├── machine.controller.ts
-│   ├── machine.service.ts
-│   └── machine.module.ts
-├── entities/                    // DBエンティティ定義
-│   ├── machine-master.entity.ts
-│   ├── machine-status-history.entity.ts
-│   └── production-progress.entity.ts
+machine-performance-backend/
+├── src/
+│   ├── main.ts                               # 🔁 Điểm khởi động ứng dụng | アプリのエントリーポイント
+│   ├── app.module.ts                         # ⚙️ Cấu hình chính & kết nối DB | モジュールとDB設定
+│   ├── entities/
+│   │   └── machine-status-history.entity.ts  # 🗄️ Entity ánh xạ bảng trạng thái | 状態テーブルのエンティティ
+│   ├── machine/
+│   │   ├── machine.controller.ts             # 🎮 API controller | APIコントローラー
+│   │   └── machine.service.ts                # 📊 Logic tính performance | 稼働率計算ロジック
+├── .env                                      # 📄 Mẫu file cấu hình DB | DB設定例ファイル
+├── package.json                              # 📦 Cấu hình dự án Node.js | Node.js プロジェクト設定
+├── tsconfig.json                             # ⚙️ TypeScript config | TypeScript設定
 ```
 
 ---
@@ -199,7 +232,6 @@ Toàn bộ mã nguồn đã được chú thích **song ngữ Việt – Nhật*
 ---
 
 
-//////////////////////////////////// Original From NestJS /////////////////////////////////////
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
