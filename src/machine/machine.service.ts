@@ -78,8 +78,8 @@ export class MachineService {
 
         // ✅ Công thức: counter / (thời gian chạy thực tế / CT)
         // ✅ 式： 生産数 ÷（経過時間 / サイクルタイム）
-        const performance = row.ct > 0 ? row.counter / (runningSec / row.ct) : 0;
-        if (performance > 1) {performance:null}
+        let performance = row.ct > 0 ? row.counter / (runningSec / row.ct) : 0;
+        if (performance > 1) {performance = 0}
 
         return {
           machine_no: row.machine_no,
