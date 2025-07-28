@@ -18,7 +18,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, IsNull } from 'typeorm';
 import { MachineStatusHistory } from '../entities/machine-status-history.entity';
 
 @Injectable()
@@ -79,6 +79,7 @@ export class MachineService {
         // ✅ Công thức: counter / (thời gian chạy thực tế / CT)
         // ✅ 式： 生産数 ÷（経過時間 / サイクルタイム）
         const performance = row.ct > 0 ? row.counter / (runningSec / row.ct) : 0;
+        if (performance > 1) {performance:null}
 
         return {
           machine_no: row.machine_no,
@@ -89,7 +90,9 @@ export class MachineService {
           machine_type: row.machine_type,
           hour: now.getHours(),
           counter: row.counter,
-          performance: performance,
+          performance: parseFloat(performance.toFixed(4)),
+          // ✅ Làm tròn performance đến 4 chữ số thập phân
+          // ✅ パフォーマンスを小数点以下4桁までに丸める
         };
       } else {
         // ✅ Các máy không phải loại 40 thì không tính hiệu suất
