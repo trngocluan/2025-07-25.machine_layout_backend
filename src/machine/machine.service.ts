@@ -79,7 +79,8 @@ export class MachineService {
         // ✅ Công thức: counter / (thời gian chạy thực tế / CT)
         // ✅ 式： 生産数 ÷（経過時間 / サイクルタイム）
         let performance = row.ct > 0 ? row.counter / (runningSec / row.ct) : 0;
-        if (performance > 1) {performance = 0}
+        if (performance > 1) {performance = 1}  // ✅ Giới hạn hiệu suất tối đa là 1 (100%)
+                                                // ✅ 最大パフォーマンスを1（100%）に制限
 
         return {
           machine_no: row.machine_no,
